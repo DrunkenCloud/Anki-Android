@@ -32,6 +32,7 @@ import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
@@ -42,6 +43,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.children
@@ -59,6 +62,7 @@ import com.ichi2.utils.show
 import com.ichi2.utils.title
 import timber.log.Timber
 import java.util.Objects
+import kotlin.math.abs
 import kotlin.math.ceil
 
 /**
@@ -117,11 +121,51 @@ class Toolbar : FrameLayout {
             suffix: String,
         ) = findViewById<View>(id).setOnClickListener { onFormat(TextWrapper(prefix, suffix)) }
 
+        fun setupButtonWithTooltipAndCustomGesture(
+            @IdRes id: Int,
+            displayPopupAction: (View) -> Boolean,
+        ) {
+            // sets up custom Gesture such that when just long clicked shows the content Description of the Button
+            // When the finger is moved up or down, it shows a popup menu with options.
+            val view = findViewById<View>(id)
+
+            TooltipCompat.setTooltipText(view, view.contentDescription)
+
+            var startY = 0f
+            var popupShown = false
+            view.setOnTouchListener { v, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        startY = event.y
+                        popupShown = false
+                        false
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        val deltaY = event.y - startY
+                        if (!popupShown && abs(deltaY) > 20) {
+                            popupShown = displayPopupAction(v)
+                            popupShown
+                        } else {
+                            false
+                        }
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        popupShown = false
+                        false
+                    }
+                    else -> false
+                }
+            }
+        }
+
         setupButtonWrappingText(R.id.note_editor_toolbar_button_bold, "<b>", "</b>")
         setupButtonWrappingText(R.id.note_editor_toolbar_button_italic, "<i>", "</i>")
         setupButtonWrappingText(R.id.note_editor_toolbar_button_underline, "<u>", "</u>")
         setupButtonWrappingText(R.id.note_editor_toolbar_button_insert_mathjax, "\\(", "\\)")
         setupButtonWrappingText(R.id.note_editor_toolbar_button_horizontal_rule, "<hr>", "")
+        setupButtonWithTooltipAndCustomGesture(R.id.note_editor_toolbar_button_insert_mathjax) { view ->
+            displayMathJaxPopupMenu(view)
+        }
         findViewById<View>(R.id.note_editor_toolbar_button_font_size).setOnClickListener { displayFontSizeDialog() }
         findViewById<View>(R.id.note_editor_toolbar_button_title).setOnClickListener { displayInsertHeadingDialog() }
 
@@ -129,6 +173,32 @@ class Toolbar : FrameLayout {
         parentLayout.children.forEach { child ->
             CompatHelper.compat.setTooltipTextByContentDescription(child)
         }
+    }
+
+    private fun displayMathJaxPopupMenu(view: View): Boolean {
+        val popupMenu = PopupMenu(context, view)
+        popupMenu.menuInflater.inflate(R.menu.mathjax_popup_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_inline_mathjax -> {
+                    onFormat(TextWrapper("\\(", "\\)"))
+                    true
+                }
+                R.id.menu_block_mathjax -> {
+                    onFormat(TextWrapper("\\[", "\\]"))
+                    true
+                }
+                R.id.menu_chemistry_mathjax -> {
+                    onFormat(TextWrapper("\\(\\ce{", "}\\)"))
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+        return true
     }
 
     /**

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_mathjax">Inline MathJax</string>
+    <string name="block_mathjax">Block MathJax</string>
+    <string name="chemistry_mathjax">Chemistry MathJax</string>
+</resources>
