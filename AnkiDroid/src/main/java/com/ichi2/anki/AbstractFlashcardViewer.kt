@@ -650,8 +650,9 @@ abstract class AbstractFlashcardViewer :
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        Timber.tag("DestroyingAbstractFlashCardViewer").d("Destroying Abstract FlashCard Viewer")
         tts.releaseTts(this)
+        super.onDestroy()
         // WebView.destroy() should be called after the end of use
         // http://developer.android.com/reference/android/webkit/WebView.html#destroy()
         if (cardFrame != null) {

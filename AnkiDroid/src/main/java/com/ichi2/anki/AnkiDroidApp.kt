@@ -135,7 +135,7 @@ open class AnkiDroidApp :
             LogType.PRODUCTION -> Timber.plant(ProductionCrashReportingTree())
         }
         if (BuildConfig.ENABLE_LEAK_CANARY) {
-            LeakCanaryConfiguration.setInitialConfigFor(this)
+            LeakCanaryConfiguration.enableImmediateDetection(this)
         } else {
             LeakCanaryConfiguration.disable()
         }

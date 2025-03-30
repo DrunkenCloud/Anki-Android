@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
 import androidx.annotation.IntDef
+import timber.log.Timber
 
 /**
  * Since it is assumed that only advanced users will use the JavaScript api,
@@ -136,6 +137,7 @@ class JavaScriptTTS internal constructor() : OnInitListener {
     }
 
     init {
+        Timber.tag("TTS").i("Is this a javascript Problem?")
         val context = AnkiDroidApp.instance.applicationContext
         mTts = TextToSpeech(context, this)
     }

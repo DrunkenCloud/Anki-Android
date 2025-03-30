@@ -278,8 +278,14 @@ object ReadText {
         mCompletionListener = listener
         val ankiActivityContext = context as? AnkiActivity
         // Create new TTS object and setup its onInit Listener
+        if (textToSpeech != null) {
+            textToSpeech!!.stop()
+            textToSpeech!!.shutdown()
+            textToSpeech = null
+        }
+        Timber.tag("TTS").i("TTS is being Initialised in ReadText")
         textToSpeech =
-            TextToSpeech(context) { status: Int ->
+            TextToSpeech(context.applicationContext) { status: Int ->
                 if (status == TextToSpeech.SUCCESS) {
                     if (availableLocales().isNotEmpty()) {
                         // notify the reviewer that TTS has been initialized
@@ -328,6 +334,7 @@ object ReadText {
                     )
                 } else {
                     showThemedToast(context, context.getString(R.string.no_tts_available_message), false)
+                    textToSpeech?.shutdown()
                     Timber.w("TTS not successfully initialized")
                 }
             }
@@ -358,9 +365,15 @@ object ReadText {
      * @param context The context used during [.initializeTts]
      */
     fun releaseTts(context: Context) {
-        if (textToSpeech != null && flashCardViewer.get() === context) {
+        val storedContext = flashCardViewer.get()
+        Timber.tag("TTS").i("%s %s TTS Function is called here", storedContext, context)
+        if (textToSpeech != null && (storedContext == null || storedContext == context)) {
+            Timber.tag("TTS").i("TTS Releasing")
             textToSpeech!!.stop()
             textToSpeech!!.shutdown()
+            textToSpeech = null
+            flashCardViewer.clear()
+            Timber.tag("TTS").i("TTS Released")
         }
     }
 

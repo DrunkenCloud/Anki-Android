@@ -29,6 +29,7 @@ import com.ichi2.libanki.Collection
 import com.ichi2.libanki.TTSTag
 import com.ichi2.libanki.Utils
 import com.ichi2.libanki.template.TemplateFilters
+import timber.log.Timber
 
 class TTS {
     @get:JvmName("isEnabled")
@@ -104,6 +105,7 @@ class TTS {
         ctx: Context,
         listener: ReadText.ReadTextListener,
     ) {
+        Timber.tag("TTS").i("Initializing TTS %b %s", enabled, ctx)
         if (!enabled) {
             return
         }
@@ -117,9 +119,8 @@ class TTS {
      * @param context The context used during [ReadText.initializeTts]
      */
     fun releaseTts(context: Context) {
-        if (!enabled) {
-            return
-        }
+        Timber.tag("TTS").i("Releasing TTS %b", enabled)
+        if (!enabled) return
         ReadText.releaseTts(context)
     }
 }

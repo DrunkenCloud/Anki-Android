@@ -252,8 +252,12 @@ open class Reviewer :
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        Timber.tag("DestroyingAbstractFlashCardViewer").i("Destroying Reviewer %s.", this)
         server.stop()
+        super.onDestroy()
+        System.gc()
+        System.runFinalization()
+        Timber.tag("DestroyingAbstractFlashCardViewer").i("Destroying Complete Reviewer %s.", this)
     }
 
     protected val flagToDisplay: Flag

@@ -38,6 +38,26 @@ object LeakCanaryConfiguration {
             )
     }
 
+    fun enableImmediateDetection(
+        application: Application,
+        knownMemoryLeaks: List<ReferenceMatcher> = emptyList(),
+    ) {
+        config =
+            config.copy(
+                dumpHeap = true,
+                retainedVisibleThreshold = 1,
+                referenceMatchers = AndroidReferenceMatchers.appDefaults + knownMemoryLeaks,
+                computeRetainedHeapSize = true,
+            )
+
+        // AppWatcher manual install if not already installed
+        if (!isInstalled) {
+            manualInstall(application)
+        }
+        // Show 'Leaks' app launcher
+        showLeakDisplayActivityLauncherIcon(true)
+    }
+
     /**
      * Sets the initial configuration for LeakCanary. This method can be used to match known library
      * leaks or leaks which have been already reported previously.
