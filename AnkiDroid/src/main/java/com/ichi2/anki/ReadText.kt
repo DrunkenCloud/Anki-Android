@@ -283,7 +283,6 @@ object ReadText {
             textToSpeech!!.shutdown()
             textToSpeech = null
         }
-        Timber.tag("TTS").i("TTS is being Initialised in ReadText")
         textToSpeech =
             TextToSpeech(context.applicationContext) { status: Int ->
                 if (status == TextToSpeech.SUCCESS) {
@@ -365,15 +364,10 @@ object ReadText {
      * @param context The context used during [.initializeTts]
      */
     fun releaseTts(context: Context) {
-        val storedContext = flashCardViewer.get()
-        Timber.tag("TTS").i("%s %s TTS Function is called here", storedContext, context)
-        if (textToSpeech != null && (storedContext == null || storedContext == context)) {
-            Timber.tag("TTS").i("TTS Releasing")
+        if (textToSpeech != null && flashCardViewer.get() === context) {
             textToSpeech!!.stop()
             textToSpeech!!.shutdown()
             textToSpeech = null
-            flashCardViewer.clear()
-            Timber.tag("TTS").i("TTS Released")
         }
     }
 

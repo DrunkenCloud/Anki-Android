@@ -191,7 +191,6 @@ object TtsVoices {
      * @return a usable [TextToSpeech] instance, or `null` if the [TextToSpeech.OnInitListener]
      * returns [TextToSpeech.ERROR]
      */
-    @JvmOverloads
     suspend fun createTts(context: Context = AnkiDroidApp.instance) =
         suspendCancellableCoroutine { continuation ->
             var textToSpeech: TextToSpeech? = null
@@ -200,7 +199,7 @@ object TtsVoices {
                 textToSpeech?.stop()
                 textToSpeech?.shutdown()
             }
-            Timber.v("begin TTS creation for %s", context)
+            Timber.v("begin TTS creation")
             textToSpeech =
                 TextToSpeech(context) { status ->
                     if (status == TextToSpeech.SUCCESS) {

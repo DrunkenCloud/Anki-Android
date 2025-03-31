@@ -56,7 +56,7 @@ class AndroidTtsPlayer(
         Timber.tag("TTS").i("Context for AndroidTTS Player: %s", context)
         this.scope = scope
         this.tts =
-            TtsVoices.createTts(context)?.apply {
+            TtsVoices.createTts(context.applicationContext)?.apply {
                 setOnUtteranceProgressListener(
                     object : UtteranceProgressListenerCompat() {
                         override fun onStart(utteranceId: String?) {
@@ -176,9 +176,9 @@ class AndroidTtsPlayer(
 
     override fun close() {
         Timber.d("Disposing of TTS Engine")
-        Timber.tag("TTS").i("tts shutdown by Android TTS Player: %s", context)
         tts?.stop()
         tts?.shutdown()
+        tts = null
     }
 }
 

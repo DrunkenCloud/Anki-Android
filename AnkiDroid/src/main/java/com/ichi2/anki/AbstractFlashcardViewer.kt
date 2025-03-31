@@ -273,7 +273,7 @@ abstract class AbstractFlashcardViewer :
     /** Handle joysticks/pedals */
     protected lateinit var motionEventHandler: MotionEventHandler
 
-    val server = AnkiServer(this).also { it.start() }
+    protected val server = AnkiServer(this).also { it.start() }
 
     @get:VisibleForTesting
     var cardContent: String? = null
@@ -595,7 +595,7 @@ abstract class AbstractFlashcardViewer :
         cardRenderContext = createInstance(this, col, typeAnswer!!)
 
         // Initialize text-to-speech. This is an asynchronous operation.
-        tts.initialize(this, ReadTextListener())
+        tts.initialize(applicationContext, ReadTextListener())
         updateActionBar()
         invalidateOptionsMenu()
     }
@@ -650,9 +650,9 @@ abstract class AbstractFlashcardViewer :
     }
 
     override fun onDestroy() {
-        Timber.tag("DestroyingAbstractFlashCardViewer").d("Destroying Abstract FlashCard Viewer")
-        tts.releaseTts(this)
         super.onDestroy()
+        automaticAnswer.disable()
+        tts.releaseTts(applicationContext)
         // WebView.destroy() should be called after the end of use
         // http://developer.android.com/reference/android/webkit/WebView.html#destroy()
         if (cardFrame != null) {
@@ -1479,7 +1479,7 @@ abstract class AbstractFlashcardViewer :
 
     @VisibleForTesting
     fun readCardTts(side: SingleCardSide) {
-        val tags = legacyGetTtsTags(getColUnsafe, currentCard!!, side, this)
+        val tags = legacyGetTtsTags(getColUnsafe, currentCard!!, side, applicationContext)
         tts.readCardText(getColUnsafe, tags, currentCard!!, side.toCardSide())
     }
 
@@ -1506,7 +1506,7 @@ abstract class AbstractFlashcardViewer :
         if (ttsInitialized) {
             tts.selectTts(
                 getColUnsafe,
-                this,
+                applicationContext,
                 currentCard!!,
                 if (displayAnswer) CardSide.ANSWER else CardSide.QUESTION,
             )

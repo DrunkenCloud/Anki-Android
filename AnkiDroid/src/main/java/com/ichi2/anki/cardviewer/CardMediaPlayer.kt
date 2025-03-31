@@ -93,7 +93,8 @@ import java.io.Closeable
 @NeedsTest("Pausing a video calls onSoundGroupCompleted")
 class CardMediaPlayer : Closeable {
     private val soundTagPlayer: SoundTagPlayer
-    private val ttsPlayer: Deferred<TtsPlayer>
+    private val
+    ttsPlayer: Deferred<TtsPlayer>
     private var soundErrorListener: SoundErrorListener? = null
     var javascriptEvaluator: () -> JavascriptEvaluator? = { null }
 
@@ -110,7 +111,7 @@ class CardMediaPlayer : Closeable {
                 soundUriBase = getMediaBaseUrl(getMediaDirectory(AnkiDroidApp.instance).path),
                 videoPlayer = VideoPlayer { javascriptEvaluator() },
             )
-        this.ttsPlayer = scope.async { AndroidTtsPlayer.createInstance(AnkiDroidApp.instance, scope) }
+        this.ttsPlayer = scope.async { AndroidTtsPlayer.createInstance(AnkiDroidApp.instance.applicationContext, scope) }
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -237,6 +238,7 @@ class CardMediaPlayer : Closeable {
         } catch (e: Exception) {
             Timber.i(e, "ttsPlayer close()")
         }
+
         scope.cancel()
     }
 
@@ -363,7 +365,7 @@ class CardMediaPlayer : Closeable {
     }
 
     /** Ensures that only one [playSoundsJob] is running at once */
-    private suspend fun playSoundsJob(block: suspend CoroutineScope.() -> Unit) {
+    private fun playSoundsJob(block: suspend CoroutineScope.() -> Unit) {
         val oldJob = playSoundsJob
         this.playSoundsJob =
             scope.launch {
@@ -398,7 +400,7 @@ class CardMediaPlayer : Closeable {
             val scope = viewer.lifecycleScope
             val soundErrorListener = viewer.createSoundErrorListener()
             // tts can take a long time to init, this defers the operation until it's needed
-            val tts = scope.async(Dispatchers.IO) { AndroidTtsPlayer.createInstance(viewer, viewer.lifecycleScope) }
+            val tts = scope.async(Dispatchers.IO) { AndroidTtsPlayer.createInstance(viewer.applicationContext, viewer.lifecycleScope) }
 
             val soundPlayer = SoundTagPlayer(soundUriBase, VideoPlayer { viewer.webViewClient!! })
 
