@@ -273,7 +273,7 @@ abstract class AbstractFlashcardViewer :
     /** Handle joysticks/pedals */
     protected lateinit var motionEventHandler: MotionEventHandler
 
-    protected val server = AnkiServer(this).also { it.start() }
+    val server = AnkiServer(this).also { it.start() }
 
     @get:VisibleForTesting
     var cardContent: String? = null
