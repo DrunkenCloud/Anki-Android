@@ -110,7 +110,7 @@ class CardMediaPlayer : Closeable {
                 soundUriBase = getMediaBaseUrl(getMediaDirectory(AnkiDroidApp.instance).path),
                 videoPlayer = VideoPlayer { javascriptEvaluator() },
             )
-        this.ttsPlayer = scope.async { AndroidTtsPlayer.createInstance(AnkiDroidApp.instance.applicationContext, scope) }
+        this.ttsPlayer = scope.async { AndroidTtsPlayer.createInstance(AnkiDroidApp.instance, scope) }
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

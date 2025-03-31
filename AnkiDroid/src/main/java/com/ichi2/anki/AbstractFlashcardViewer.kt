@@ -595,7 +595,7 @@ abstract class AbstractFlashcardViewer :
         cardRenderContext = createInstance(this, col, typeAnswer!!)
 
         // Initialize text-to-speech. This is an asynchronous operation.
-        tts.initialize(applicationContext, ReadTextListener())
+        tts.initialize(this, ReadTextListener())
         updateActionBar()
         invalidateOptionsMenu()
     }
@@ -651,16 +651,15 @@ abstract class AbstractFlashcardViewer :
 
     override fun onDestroy() {
         super.onDestroy()
-        tts.releaseTts(applicationContext)
+        tts.releaseTts(this)
+        server.stop()
         // WebView.destroy() should be called after the end of use
         // http://developer.android.com/reference/android/webkit/WebView.html#destroy()
         if (cardFrame != null) {
             cardFrame!!.removeAllViews()
         }
         destroyWebView(webView) // OK to do without a lock
-        if (this::cardMediaPlayer.isInitialized) {
-            cardMediaPlayer.close()
-        }
+        cardMediaPlayer.close()
     }
 
     override fun onKeyDown(
@@ -1478,7 +1477,7 @@ abstract class AbstractFlashcardViewer :
 
     @VisibleForTesting
     fun readCardTts(side: SingleCardSide) {
-        val tags = legacyGetTtsTags(getColUnsafe, currentCard!!, side, applicationContext)
+        val tags = legacyGetTtsTags(getColUnsafe, currentCard!!, side, this)
         tts.readCardText(getColUnsafe, tags, currentCard!!, side.toCardSide())
     }
 
@@ -1505,7 +1504,7 @@ abstract class AbstractFlashcardViewer :
         if (ttsInitialized) {
             tts.selectTts(
                 getColUnsafe,
-                applicationContext,
+                this,
                 currentCard!!,
                 if (displayAnswer) CardSide.ANSWER else CardSide.QUESTION,
             )

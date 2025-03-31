@@ -279,7 +279,7 @@ object ReadText {
         val ankiActivityContext = context as? AnkiActivity
         // Create new TTS object and setup its onInit Listener
         textToSpeech =
-            TextToSpeech(context.applicationContext) { status: Int ->
+            TextToSpeech(context) { status: Int ->
                 if (status == TextToSpeech.SUCCESS) {
                     if (availableLocales().isNotEmpty()) {
                         // notify the reviewer that TTS has been initialized
