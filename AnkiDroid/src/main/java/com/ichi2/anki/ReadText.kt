@@ -278,11 +278,6 @@ object ReadText {
         mCompletionListener = listener
         val ankiActivityContext = context as? AnkiActivity
         // Create new TTS object and setup its onInit Listener
-        if (textToSpeech != null) {
-            textToSpeech!!.stop()
-            textToSpeech!!.shutdown()
-            textToSpeech = null
-        }
         textToSpeech =
             TextToSpeech(context.applicationContext) { status: Int ->
                 if (status == TextToSpeech.SUCCESS) {
@@ -333,7 +328,6 @@ object ReadText {
                     )
                 } else {
                     showThemedToast(context, context.getString(R.string.no_tts_available_message), false)
-                    textToSpeech?.shutdown()
                     Timber.w("TTS not successfully initialized")
                 }
             }

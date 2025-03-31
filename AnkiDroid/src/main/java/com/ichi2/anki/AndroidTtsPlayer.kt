@@ -53,7 +53,6 @@ class AndroidTtsPlayer(
     private var currentUtterance: String? = null
 
     suspend fun init(scope: CoroutineScope) {
-        Timber.tag("TTS").i("Context for AndroidTTS Player: %s", context)
         this.scope = scope
         this.tts =
             TtsVoices.createTts(context.applicationContext)?.apply {
@@ -178,7 +177,6 @@ class AndroidTtsPlayer(
         Timber.d("Disposing of TTS Engine")
         tts?.stop()
         tts?.shutdown()
-        tts = null
     }
 }
 

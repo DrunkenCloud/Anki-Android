@@ -33,7 +33,6 @@ import com.ichi2.libanki.DeckConfig.Companion.ANSWER_ACTION
 import com.ichi2.libanki.DeckId
 import com.ichi2.utils.HandlerUtils
 import timber.log.Timber
-import java.lang.ref.WeakReference
 
 /**
  * AnkiDroid contains a setting: "Automatic display answer" which displays the
@@ -67,7 +66,7 @@ import java.lang.ref.WeakReference
  * Both of which clear the task queue for the question ([onSelectEase] or vice-versa)
  */
 class AutomaticAnswer(
-    private var target: WeakReference<AutomaticallyAnswered>,
+    private var target: AutomaticallyAnswered,
     @VisibleForTesting val settings: AutomaticAnswerSettings,
 ) {
     /** Whether any tasks should be executed/scheduled.
@@ -90,7 +89,7 @@ class AutomaticAnswer(
                 Timber.d("showAnswer: disabled")
                 return@Runnable
             }
-            target.get()?.automaticShowAnswer()
+            target.automaticShowAnswer()
         }
     private val showQuestionTask =
         Runnable {
@@ -98,7 +97,7 @@ class AutomaticAnswer(
                 Timber.d("showQuestion: disabled")
                 return@Runnable
             }
-            target.get()?.automaticShowQuestion(settings.answerAction)
+            target.automaticShowQuestion(settings.answerAction)
         }
 
     /**
@@ -211,17 +210,6 @@ class AutomaticAnswer(
         hasPlayedSounds = false
     }
 
-    /**
-     * Releases the resources and removes pending tasks.
-     * Call this method when the AutomaticAnswer object is no longer needed.
-     */
-    fun release() {
-        Timber.i("release")
-        disable()
-        timeoutHandler.removeCallbacks(showAnswerTask)
-        timeoutHandler.removeCallbacks(showQuestionTask)
-    }
-
     interface AutomaticallyAnswered {
         fun automaticShowAnswer()
 
@@ -230,8 +218,7 @@ class AutomaticAnswer(
 
     companion object {
         @CheckResult
-        fun defaultInstance(target: AutomaticallyAnswered): AutomaticAnswer =
-            AutomaticAnswer(WeakReference(target), AutomaticAnswerSettings())
+        fun defaultInstance(target: AutomaticallyAnswered): AutomaticAnswer = AutomaticAnswer(target, AutomaticAnswerSettings())
 
         @CheckResult
         fun createInstance(
@@ -239,7 +226,7 @@ class AutomaticAnswer(
             col: Collection,
         ): AutomaticAnswer {
             val settings = AutomaticAnswerSettings.createInstance(col)
-            return AutomaticAnswer(WeakReference(target), settings)
+            return AutomaticAnswer(target, settings)
         }
     }
 }

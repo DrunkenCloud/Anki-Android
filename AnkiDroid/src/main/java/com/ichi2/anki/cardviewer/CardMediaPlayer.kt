@@ -93,8 +93,7 @@ import java.io.Closeable
 @NeedsTest("Pausing a video calls onSoundGroupCompleted")
 class CardMediaPlayer : Closeable {
     private val soundTagPlayer: SoundTagPlayer
-    private val
-    ttsPlayer: Deferred<TtsPlayer>
+    private val ttsPlayer: Deferred<TtsPlayer>
     private var soundErrorListener: SoundErrorListener? = null
     var javascriptEvaluator: () -> JavascriptEvaluator? = { null }
 
@@ -238,7 +237,6 @@ class CardMediaPlayer : Closeable {
         } catch (e: Exception) {
             Timber.i(e, "ttsPlayer close()")
         }
-
         scope.cancel()
     }
 
@@ -365,7 +363,7 @@ class CardMediaPlayer : Closeable {
     }
 
     /** Ensures that only one [playSoundsJob] is running at once */
-    private fun playSoundsJob(block: suspend CoroutineScope.() -> Unit) {
+    private suspend fun playSoundsJob(block: suspend CoroutineScope.() -> Unit) {
         val oldJob = playSoundsJob
         this.playSoundsJob =
             scope.launch {
