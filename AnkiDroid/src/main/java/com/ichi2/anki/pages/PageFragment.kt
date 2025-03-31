@@ -151,11 +151,6 @@ open class PageFragment(
             ?: throw IllegalArgumentException("unhandled method: $methodName")
     }
 
-    override fun onDestroyView() {
-        server.stop()
-        super.onDestroyView()
-    }
-
     companion object {
         const val PATH_ARG_KEY = "path"
         const val TITLE_ARG_KEY = "title"

@@ -66,7 +66,7 @@ import timber.log.Timber
  * Both of which clear the task queue for the question ([onSelectEase] or vice-versa)
  */
 class AutomaticAnswer(
-    private var target: AutomaticallyAnswered,
+    target: AutomaticallyAnswered,
     @VisibleForTesting val settings: AutomaticAnswerSettings,
 ) {
     /** Whether any tasks should be executed/scheduled.

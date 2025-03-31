@@ -361,7 +361,6 @@ object ReadText {
         if (textToSpeech != null && flashCardViewer.get() === context) {
             textToSpeech!!.stop()
             textToSpeech!!.shutdown()
-            textToSpeech = null
         }
     }
 
