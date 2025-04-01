@@ -77,6 +77,7 @@ import com.ichi2.anki.browser.SaveSearchResult
 import com.ichi2.anki.browser.SharedPreferencesLastDeckIdRepository
 import com.ichi2.anki.browser.registerFindReplaceHandler
 import com.ichi2.anki.browser.toCardBrowserLaunchOptions
+import com.ichi2.anki.common.utils.annotation.KotlinCleanup
 import com.ichi2.anki.dialogs.BrowserOptionsDialog
 import com.ichi2.anki.dialogs.CardBrowserMySearchesDialog
 import com.ichi2.anki.dialogs.CardBrowserMySearchesDialog.Companion.newInstance
@@ -110,6 +111,7 @@ import com.ichi2.anki.snackbar.showSnackbar
 import com.ichi2.anki.ui.internationalization.toSentenceCase
 import com.ichi2.anki.utils.ext.getCurrentDialogFragment
 import com.ichi2.anki.utils.ext.ifNotZero
+import com.ichi2.anki.utils.ext.setFragmentResultListener
 import com.ichi2.anki.utils.ext.showDialogFragment
 import com.ichi2.anki.widgets.DeckDropDownAdapter.SubtitleListener
 import com.ichi2.annotations.NeedsTest
@@ -122,7 +124,6 @@ import com.ichi2.libanki.NoteId
 import com.ichi2.libanki.SortOrder
 import com.ichi2.libanki.undoableOp
 import com.ichi2.ui.CardBrowserSearchView
-import com.ichi2.utils.KotlinCleanup
 import com.ichi2.utils.LanguageUtil
 import com.ichi2.utils.TagsUtil.getUpdatedTags
 import com.ichi2.utils.dp
@@ -451,7 +452,7 @@ open class CardBrowser :
 
         setupFlows()
         registerOnForgetHandler { viewModel.queryAllSelectedCardIds() }
-        supportFragmentManager.setFragmentResultListener(REQUEST_REPOSITION_NEW_CARDS, this) { _, bundle ->
+        setFragmentResultListener(REQUEST_REPOSITION_NEW_CARDS) { _, bundle ->
             repositionCardsNoValidation(
                 position = bundle.getInt(RepositionCardFragment.ARG_POSITION),
                 step = bundle.getInt(RepositionCardFragment.ARG_STEP),

@@ -1,5 +1,5 @@
-/***************************************************************************************
- * Copyright (c) 2021 Arthur Milchior <arthur@milchior.fr>                              *
+/****************************************************************************************
+ * Copyright (c) 2025 lukstbit <52494258+lukstbit@users.noreply.github.com>             *
  *                                                                                      *
  * This program is free software; you can redistribute it and/or modify it under        *
  * the terms of the GNU General Public License as published by the Free Software        *
@@ -13,24 +13,23 @@
  * You should have received a copy of the GNU General Public License along with         *
  * this program.  If not, see <http://www.gnu.org/licenses/>.                           *
  ****************************************************************************************/
-package com.ichi2.utils
+package com.ichi2.anki.utils.ext
 
-import com.ichi2.anki.common.utils.annotation.KotlinCleanup
-import java.util.HashMap
-import java.util.HashSet
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.setFragmentResultListener
 
-object HashUtil {
-    /**
-     * @param size Number of elements expected in the hash structure
-     * @return Initial capacity for the hash structure. Copied from HashMap code
-     */
-    private fun capacity(size: Int): Int = ((size / .75f).toInt() + 1).coerceAtLeast(16)
-
-    fun <T> hashSetInit(size: Int): HashSet<T> = HashSet(capacity(size))
-
-    @KotlinCleanup("return mutableMap")
-    fun <T, U> hashMapInit(size: Int): HashMap<T, U> = HashMap(capacity(size))
+/**
+ * Utility method that simplifies setting a fragment result listener in a [FragmentActivity].
+ * Similar to [Fragment.setFragmentResultListener] library method.
+ *
+ * @param requestKey identifier for the request
+ * @param listener a callback triggered when the result associated to [requestKey] is set.
+ */
+fun FragmentActivity.setFragmentResultListener(
+    requestKey: String,
+    listener: ((requestKey: String, bundle: Bundle) -> Unit),
+) {
+    supportFragmentManager.setFragmentResultListener(requestKey, this, listener)
 }
-
-/** Provides a hashcode given a series of ints */
-fun hash(vararg values: Int): Int = values.fold(0) { acc, value -> 31 * acc + value }
