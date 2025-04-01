@@ -55,7 +55,7 @@ class AndroidTtsPlayer(
     suspend fun init(scope: CoroutineScope) {
         this.scope = scope
         this.tts =
-            TtsVoices.createTts(context)?.apply {
+            TtsVoices.createTts(context.applicationContext)?.apply {
                 setOnUtteranceProgressListener(
                     object : UtteranceProgressListenerCompat() {
                         override fun onStart(utteranceId: String?) {
