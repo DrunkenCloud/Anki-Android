@@ -234,6 +234,7 @@ class CardMediaPlayer : Closeable {
         soundTagPlayer.releaseSound()
         try {
             ttsPlayer.getCompleted().close()
+            Timber.tag("TTS").i("ttsPlayer close()")
         } catch (e: Exception) {
             Timber.i(e, "ttsPlayer close()")
         }
@@ -398,7 +399,7 @@ class CardMediaPlayer : Closeable {
             val scope = viewer.lifecycleScope
             val soundErrorListener = viewer.createSoundErrorListener()
             // tts can take a long time to init, this defers the operation until it's needed
-            val tts = scope.async(Dispatchers.IO) { AndroidTtsPlayer.createInstance(viewer, viewer.lifecycleScope) }
+            val tts = scope.async(Dispatchers.IO) { AndroidTtsPlayer.createInstance(viewer.applicationContext, viewer.lifecycleScope) }
 
             val soundPlayer = SoundTagPlayer(soundUriBase, VideoPlayer { viewer.webViewClient!! })
 
