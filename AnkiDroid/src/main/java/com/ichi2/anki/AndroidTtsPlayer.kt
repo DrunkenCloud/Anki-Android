@@ -177,6 +177,7 @@ class AndroidTtsPlayer(
         Timber.d("Disposing of TTS Engine")
         tts?.stop()
         tts?.shutdown()
+        tts = null
     }
 }
 
